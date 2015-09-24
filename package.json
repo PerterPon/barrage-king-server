@@ -1,0 +1,30 @@
+{
+  "name": "hc-lite",
+  "main": "",
+  "version": "1.0.0",
+  "dependencies": {
+    "pm2"                  : "*",
+    "coffee-script"        : "*",
+    "justlog"              : "*",
+    "options-stream"       : "*",
+    "@ali/hc-cover-runner" : "*",
+    "co"                   : "*",
+    "thunkify"             : "*",
+    "connect"              : "2.12.0",
+    "coffee-script"        : "*",
+    "event-pipe"           : "*",
+    "options-stream"       : "*",
+    "justlog"              : "*",
+    "clone"                : "*",
+    "co"                   : "*",
+    "node-cover"           : "*",
+    "thunkify"             : "*",
+    "cover-router"         : "*"
+  },
+  "engines": {
+    "node"   :  ">=0.12.0"
+  },
+  "scripts": {
+    "test": "make test"
+  }
+}
