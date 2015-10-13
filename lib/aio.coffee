@@ -40,8 +40,8 @@ class Aio
       exec_mode  : 'cluster_mode'
       instances  : @config.process_num
       cwd        : process.cwd()
-      out_file   : process.cwd(), './log/child_stdout.log'
-      error_file : process.cwd(), './log/child_stderr.log'
+      out_file   : path.join process.cwd(), './log/child_stdout.log'
+      error_file : path.join process.cwd(), './log/child_stderr.log'
 
     pm2.connect ->
       pm2.start option, ( err, subProcess ) ->
