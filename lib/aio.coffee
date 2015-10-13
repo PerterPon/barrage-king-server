@@ -40,10 +40,9 @@ class Aio
       exec_mode  : 'cluster_mode'
       instances  : @config.process_num
       cwd        : process.cwd()
-      out_file   : path.join __dirname, '../log/child_stdout.log'
-      error_file : path.join __dirname, '../log/child_stderr.log'
+      out_file   : process.cwd(), './log/child_stdout.log'
+      error_file : process.cwd(), './log/child_stderr.log'
 
-    console.log option
     pm2.connect ->
       pm2.start option, ( err, subProcess ) ->
         console.log 'application has been successfully started!'
@@ -63,11 +62,9 @@ class Aio
       @log  = JustLog
         file  :
           level  : JustLog.ERROR | JustLog.INFO | JustLog.WARN
-          path   : "[#{path.join log_dir, 'hc-lite.log'}]"
+          path   : "[#{path.join log_dir, './log/hc-lite.log'}]"
           patten : 'file'
     else
       @log  = console
 
 module.exports = Aio
-
-new Aio

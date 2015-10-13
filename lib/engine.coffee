@@ -20,7 +20,7 @@ CONFIG =
   dir     : cwd
   appname : "#{config.app}@#{config.version}"
 
-start = ( runner ) ->
+start  = ( runner ) ->
   unless runner?
     console.warn '\"runner\" option was not specified, use default runner: hc-cover-runner'
     runner     = 'hc-cover-runner'
@@ -32,7 +32,6 @@ start = ( runner ) ->
     return console.error "require runner: #{runner} with error:#{e.message}, does it exists?"
 
   runnerIns = Runner CONFIG
-  console.log config.port
   runnerIns.config.sock = config.port
   runnerIns.run()
 
