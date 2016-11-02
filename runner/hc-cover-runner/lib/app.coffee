@@ -33,6 +33,7 @@ class App
     # get app config
     config   = @_getAppCfg()
     @config  = config
+    console.log config
     return if undefined is config
 
     # generator server
@@ -263,6 +264,7 @@ class App
     @_init ( err ) =>
       return cb err if err
       extensions = tool.normalExtension config
+      console.log extensions
       @_useMiddlewares extensions        
       return cb @err if @err
       @app.listen sock, =>

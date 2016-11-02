@@ -3,28 +3,25 @@
   "main": "",
   "version": "1.0.3",
   "dependencies": {
-    "pm2"                  : "*",
-    "coffee-script"        : "*",
-    "justlog"              : "*",
-    "options-stream"       : "*",
-    "co"                   : "*",
-    "thunkify"             : "*",
+    "pm2"                  : "0.15.7",
+    "coffee-script"        : "1.10.0",
+    "justlog"              : "0.1.5",
+    "options-stream"       : "0.0.8",
+    "thunkify"             : "2.1.2",
     "connect"              : "2.12.0",
-    "coffee-script"        : "*",
-    "event-pipe"           : "*",
-    "options-stream"       : "*",
-    "justlog"              : "*",
-    "clone"                : "*",
-    "co"                   : "*",
+    "event-pipe"           : "0.0.5",
+    "clone"                : "1.0.2",
+    "co"                   : "4.6.0",
     "node-cover"           : "*",
-    "thunkify"             : "*",
-    "cover-router"         : "*"
+    "cover-router"         : "*",
+    "request"              : "2.76.0"
   },
   "engines": {
-    "node"   :  ">=0.12.0"
+    "node"   :  ">=6.9.1"
   },
   "scripts": {
-    "test": "make test"
+    "start" : "./bin/hc-lite",
+    "test"  : "make test"
   },
   "bin" : {
     "hc-lite" : "./bin/hc-lite"

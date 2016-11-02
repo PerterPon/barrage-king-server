@@ -52,7 +52,7 @@ class Aio
     { runner } = @config
     unless runner?
       @log.warn '\"runner\" option was not specified, use default runner: hc-cover-runner'
-      runner   = '@ali/hc-cover-runner'
+      runner   = 'hc-cover-runner'
       @config.runner = runner
 
   initLog : ->
