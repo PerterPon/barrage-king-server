@@ -11,7 +11,6 @@ class Test {
 
   middleware() {
     return function *( req, res, next ) {
-
       res.end( 'hello world!' );
     }
   }

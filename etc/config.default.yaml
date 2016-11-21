@@ -5,5 +5,7 @@ version: 1.0.0
 
 port: 8080
 
+wsExtension: './src/test-websocket'
+
 extensions:
-  '/ > ./lib/test':
+  '/ > ./src/test-http':

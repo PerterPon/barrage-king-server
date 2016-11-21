@@ -29,7 +29,7 @@ start  = ( runner ) ->
     runnerPath = path.join __dirname, '../runner', runner
     Runner     = require runnerPath
   catch e
-    return console.error "require runner: #{runner} with error:#{e.message}, does it exists?"
+    return console.error "require runner: #{runner} with error:#{e.message}, does it exists? \n #{e.stack}"
 
   runnerIns = Runner CONFIG
   runnerIns.config.sock = config.port

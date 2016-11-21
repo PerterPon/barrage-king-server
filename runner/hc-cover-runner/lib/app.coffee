@@ -19,10 +19,15 @@ justlog   = require 'justlog'
 connect   = require 'connect'
 thunkify  = require 'thunkify'
 coverRouter = require 'cover-router'
+WebSocket   = require( 'websocket' ).server
+
+WS_CLIENT_LOST_TIME = 60 * 1000
 
 class App
 
   routers : []
+
+  connectionPool : {}
 
   constructor : ( options, @log ) ->
     @log    ?= console
@@ -33,7 +38,6 @@ class App
     # get app config
     config   = @_getAppCfg()
     @config  = config
-    console.log config
     return if undefined is config
 
     # generator server
@@ -53,6 +57,9 @@ class App
     config.sock  = sock
 
     @app         = @_generatorServer()
+    @wsServer    = @_generatorWebSocketServer()
+    @wsServer.on 'request', @_onWsServerRequest.bind @
+    @wsServer.on 'error', @_errHandle.bind @
 
     @app.on 'error', @_errHandle.bind @
 
@@ -84,15 +91,65 @@ class App
       return undefined
     config
 
-  # _getPrefixes : ( urls ) ->
-  #   urlMap   = {}
-  #   for url in urls
-  #     { pathname } = urlLib.parse url, true
-  #     urlMap[ pathname ] = true
-  #   Object.keys urlMap    
+  _onWsServerRequest : ( request ) ->   
+    { log } = @
+    { dir } = @options
+    { wsExtension } = @config
+    if false is @_isOriginValid request.origin
+      request.reject()
+      log.warn "trying to connect ws server but origin: [#{request.origin}] invalid!"
+      return
+
+    try
+      connection = request.accept 'echo-protocol', request.origin    
+    catch e
+      log.error 'request accept with error: [#{e.message}], stack: [#{e.stack}]'
+
+    if undefined is connection
+      log.error "Specified protocol was invalid! protocol: [#{request.requestedProtocols}]"
+      return
+
+    { remoteAddress } = connection
+    log.info "connection: [#{remoteAddress}] accepted!"
+    random            = Math.round Math.random() * 10000000
+    connectionName    = "#{remoteAddress}@#{random}"
+
+    lastPing   = Date.now()
+    lostPing   = setTimeout connection.close, WS_CLIENT_LOST_TIME
+
+    connection.on 'message', ( event ) =>
+      if 'ping' is event.utf8Data
+        connection.sendUTF 'pong'
+        clearTimeout lostPing
+        lostPing = setTimeout connection.close, WS_CLIENT_LOST_TIME
+      else
+        @connectionPool[ connectionName ]?.onMessage event
+
+    try
+      Extention = require path.join dir, wsExtension
+      extIns    = new Extention connection
+      @connectionPool[ connectionName ] = extIns
+    catch e
+      log.error "trying to load ws extension: [#{wsExtension}] but filed! error: [#{e.message}]"
+
+    connection.on 'close', ( reasonCode, description ) =>
+      log.warn "connection: [#{remoteAddress}] disconnected! reason code: [#{reasonCode}], description: [#{description}]"
+      delete @connectionPool[ connectionName ]
+      connection = null
+
+  _isOriginValid : ( origin ) ->
+    { validOrigin } = @options
+    origin is validOrigin
+    return true
 
   _generatorServer : ->
     app = cover()
+
+  _generatorWebSocketServer : ->
+    { app }  = @
+    wsServer = new WebSocket
+      httpServer            : app.http
+      autoAcceptConnections : false
 
   _init : co.wrap ( cb ) ->
     { config, options } = @
@@ -190,7 +247,6 @@ class App
         break
 
       options = os 
-        _ws_http     : @app.http
         _app_dir     : @options.dir
         development  : @development
         _addRouter   : ( cmd, middleware ) =>
@@ -263,9 +319,8 @@ class App
     { sock } = config
     @_init ( err ) =>
       return cb err if err
-      extensions = tool.normalExtension config
-      console.log extensions
-      @_useMiddlewares extensions        
+      extensions = tool.normalExtension config.url, config.extensions
+      @_useMiddlewares extensions
       return cb @err if @err
       @app.listen sock, =>
         cb? null, config

@@ -44,6 +44,7 @@ class Aio
       error_file : path.join process.cwd(), './log/child_stderr.log'
 
     pm2.connect ->
+      console.log 'pm2 connect'
       pm2.start option, ( err, subProcess ) ->
         console.log 'application has been successfully started!'
         pm2.disconnect()

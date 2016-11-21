@@ -10,9 +10,8 @@ path         = require 'path'
 os           = require 'options-stream'
 
 #主路由的解析
-exports.normalExtension = (config)->
-  extensions = config.extensions
-  urls = config.url || []
+exports.normalExtension = ( url, extensions )->
+  urls         = url or []
 
   defaulMethod = undefined
   for url in urls
