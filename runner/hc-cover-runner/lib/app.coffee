@@ -129,6 +129,10 @@ class App
     try
       Extention = require path.join dir, wsExtension
       extIns    = new Extention connection
+
+      extIns.connection     = connection
+      extIns.connectionPool = @connectionPool
+
       @connectionPool[ connectionName ] = extIns
     catch e
       log.error "trying to load ws extension: [#{wsExtension}] but filed! error: [#{e.message}]"
