@@ -14,7 +14,7 @@ class Test {
   }
 
   onMessage( event ) {
-    this.connection.send( event.utf8Data );
+    this.connection.send( process.pid );
   }
 
 }

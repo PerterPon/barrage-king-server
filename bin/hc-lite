@@ -6,4 +6,9 @@ require( 'coffee-script' ).register();
 
 var Aio = require( '../lib/aio' );
 
-new Aio();
+const argv = process.argv;
+
+// dev, daily, pre, prod
+const env  = argv[ 2 ];
+
+new Aio( env );

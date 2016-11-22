@@ -9,7 +9,13 @@
 
 class Test {
 
+  constructor( options, log ) {
+    this.options = options;
+    this.log     = log;
+  }
+
   middleware() {
+    const log = this.log;
     return function *( req, res, next ) {
       res.end( 'hello world!' );
     }
@@ -17,6 +23,6 @@ class Test {
 
 }
 
-module.exports = () => {
-  return new Test();
+module.exports = ( options, log ) => {
+  return new Test( options, log );
 }

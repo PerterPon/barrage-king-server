@@ -47,6 +47,7 @@ class App
       serverPath : __dirname
     , options.serverConfig
     @development = @serverConfig.run.development in [ true, 'true' ]
+    @development = false
     { name, version } = config
     # generate sock file path
     basePath     = process.cwd()
@@ -173,38 +174,25 @@ class App
   _initLog : ->
     { dir, logPath, logsDir } = @options
     { name } = @config
-    log = console
-    { development }  = @
+    { development, log }      = @
     if false is development and logPath?
-      log = justlog
-        file  : 
-          level   : justlog.ERROR | justlog.INFO | justlog.WARN
-          path    : logPath
-          pattern : "{fulltime} ({file}) [{levelTrim}] {action} {info}"
-        stdio : false
-      middlewareLog = justlog.middleware
-        file  :
-          path : "[#{path.join logsDir, 'access'}-]YYYY-MM-DD[.log]"
-        stdio : false
       appAccess = justlog.middleware
         file :
           path : "[#{path.join logsDir, name + '-access'}-]YYYY-MM-DD[.log]"
         stdio: false
-    log.log = log.info
-    { log, middlewareLog, appAccess }
+    { appAccess }
 
   _useMiddlewares : co.wrap ( lists ) ->
-    { log, middlewareLog, appAccess } = @_initLog()
+    { appAccess } = @_initLog()
     @_doUseMiddleware '/', appAccess,     undefined, false if appAccess
-    @_doUseMiddleware '/', middlewareLog, undefined, false if appAccess
 
-    { serverConfig, options } = @
+    { serverConfig, options, log } = @
     { dir } = options
 
     for item, idx in lists
       { module, pathname, method, fmethod } = item
       if undefined in [ module, pathname ]
-        @log.warn "WARN: Wrong middleware Config, module and pathname is necessary: #{JSON.stringify k}"
+        log.warn "WARN: Wrong middleware Config, module and pathname is necessary: #{JSON.stringify k}"
         continue
       delete item.module
       delete item.pathname
@@ -254,10 +242,11 @@ class App
           @routers.push { cmd, middleware }
       , item.options
 
-      log = process?.honeycomb?.log or log
+      # log = process?.honeycomb?.log or log
       options.log = log
 
       try
+        console.log log
         user   = unify userModule, fmethod, options, log, { options: item.options }
       catch e
         @_errHandle e

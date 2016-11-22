@@ -8,8 +8,6 @@
 
 "use strict"
 
-os      = require 'options-stream'
-
 path    = require 'path'
 
 fs      = require 'fs'
@@ -18,16 +16,19 @@ pm2     = require 'pm2'
 
 JustLog = require 'justlog'
 
-commom  = require './commom'
+common  = require './common'
+
+log     = require( './log' )()
 
 class Aio
 
-  constructor : ->
-    @config = commom.getConfig process.cwd()
+  constructor : ( env ) ->
+    @env    = env
+    @config = common.getConfig()
     @init()
 
   init : ->
-    @initLog()
+    # @initLog()
     @initRunner()
     @start()
 
@@ -40,32 +41,25 @@ class Aio
       exec_mode  : 'cluster_mode'
       instances  : @config.process_num
       cwd        : process.cwd()
+      env        : {
+        NODE_ENV   : @env
+      },
       out_file   : path.join process.cwd(), './log/child_stdout.log'
       error_file : path.join process.cwd(), './log/child_stderr.log'
+      log_date_format : 'YYYY-MM-DD HH:mm:ss Z'
+      merge_logs : true
 
     pm2.connect ->
-      console.log 'pm2 connect'
+      log.info 'pm2 connect'
       pm2.start option, ( err, subProcess ) ->
-        console.log 'application has been successfully started!'
+        log.info 'application has been successfully started!'
         pm2.disconnect()
 
   initRunner : ->
     { runner } = @config
     unless runner?
-      @log.warn '\"runner\" option was not specified, use default runner: hc-cover-runner'
+      log.warn '\"runner\" option was not specified, use default runner: hc-cover-runner'
       runner   = 'hc-cover-runner'
       @config.runner = runner
-
-  initLog : ->
-    { log_dir } = @config
-    log_dir ?= process.cwd()
-    if 'dev' isnt process.env
-      @log  = JustLog
-        file  :
-          level  : JustLog.ERROR | JustLog.INFO | JustLog.WARN
-          path   : "[#{path.join log_dir, './log/hc-lite.log'}]"
-          patten : 'file'
-    else
-      @log  = console
 
 module.exports = Aio

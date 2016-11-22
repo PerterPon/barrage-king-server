@@ -8,17 +8,23 @@
 
 "use strict"
 
-commom = require './commom'
+commom  = require './common'
 
-path   = require 'path'
+path    = require 'path'
 
-cwd    = process.cwd()
+cwd     = process.cwd()
 
-config = commom.getConfig process.cwd()
+log     = require( './log' )()
 
-CONFIG =
+config  = commom.getConfig()
+
+appname = "#{config.name}@#{config.version}"
+
+CONFIG  =
   dir     : cwd
-  appname : "#{config.app}@#{config.version}"
+  logPath : config.justlogPath
+  appname : appname
+  logsDir : config.logPath
 
 start  = ( runner ) ->
   unless runner?
@@ -31,7 +37,7 @@ start  = ( runner ) ->
   catch e
     return console.error "require runner: #{runner} with error:#{e.message}, does it exists? \n #{e.stack}"
 
-  runnerIns = Runner CONFIG
+  runnerIns = Runner CONFIG, log
   runnerIns.config.sock = config.port
   runnerIns.run()
 
