@@ -18,6 +18,8 @@ JustLog = require 'justlog'
 
 common  = require './common'
 
+os      = require 'os'
+
 log     = require( './log' )()
 
 class Aio
@@ -33,13 +35,14 @@ class Aio
     @start()
 
   start : ->
-    script = path.join __dirname, './worker.js'
-    option =
+    script     = path.join __dirname, './worker.js'
+    processNum = @_getPorcessNumber()
+    option     =
       name       : "#{@config.name}@#{@config.version}"
       script     : script
       args       : [ @config.runner ]
       exec_mode  : 'cluster_mode'
-      instances  : @config.process_num
+      instances  : processNum
       cwd        : process.cwd()
       env        : {
         NODE_ENV   : @env
@@ -54,6 +57,17 @@ class Aio
       pm2.start option, ( err, subProcess ) ->
         log.info 'application has been successfully started!'
         pm2.disconnect()
+
+  _getPorcessNumber : () ->
+    { process_num } = @config
+    process_num ?= 'auto'
+    number   = null
+    if 'auto' is process_num
+      number = os.cpus().length
+    else
+      number = process_num
+
+    return number
 
   initRunner : ->
     { runner } = @config
