@@ -1,0 +1,30 @@
+{
+  "name": "hc-lite",
+  "main": "",
+  "version": "1.0.3",
+  "dependencies": {
+    "pm2"                  : "2.1.5",
+    "coffee-script"        : "1.10.0",
+    "justlog"              : "0.1.5",
+    "options-stream"       : "0.0.8",
+    "thunkify"             : "2.1.2",
+    "connect"              : "2.12.0",
+    "event-pipe"           : "0.0.5",
+    "clone"                : "1.0.2",
+    "co"                   : "4.6.0",
+    "node-cover"           : "*",
+    "cover-router"         : "*",
+    "request"              : "2.76.0",
+    "websocket"            : "1.0.23"
+  },
+  "engines": {
+    "node"   :  ">=6.9.1"
+  },
+  "scripts": {
+    "start" : "./bin/hc-lite dev",
+    "test"  : "make test"
+  },
+  "bin" : {
+    "hc-lite" : "./bin/hc-lite"
+  }
+}

@@ -1,0 +1,13 @@
+
+name: hc-lite
+
+version: 1.0.0
+
+port: 8080
+
+process_num: 2
+
+wsExtension: './src/test-websocket'
+
+extensions:
+  '/ > ./src/test-http':
