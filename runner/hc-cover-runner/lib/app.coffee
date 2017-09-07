@@ -104,7 +104,7 @@ class App
     try
       connection = request.accept 'echo-protocol', request.origin    
     catch e
-      log.error 'request accept with error: [#{e.message}], stack: [#{e.stack}]'
+      log.error "request accept with error: [#{e.message}], stack: [#{e.stack}]"
 
     if undefined is connection
       log.error "Specified protocol was invalid! protocol: [#{request.requestedProtocols}]"
@@ -118,13 +118,14 @@ class App
     lastPing   = Date.now()
     lostPing   = setTimeout connection.close, WS_CLIENT_LOST_TIME
 
+    connection.hcName = connectionName
     connection.on 'message', ( event ) =>
       if 'ping' is event.utf8Data
         connection.sendUTF 'pong'
         clearTimeout lostPing
         lostPing = setTimeout connection.close, WS_CLIENT_LOST_TIME
       else
-        @connectionPool[ connectionName ]?.onMessage event
+        @connectionPool[ connectionName ]?.onMessage() event
 
     try
       Extention = require path.join dir, wsExtension
